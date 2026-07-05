@@ -3,8 +3,26 @@ services:
     build: ./backend
     ports:
       - "8010:8000"
-    env_file:
-      - .env
+    environment:
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-insecure-dev-key-change-me}
+      - DJANGO_DEBUG=${DJANGO_DEBUG:-True}
+      - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-config.settings.development}
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
+      - DATABASE_URL=${DATABASE_URL:-postgres://analytics_user:analytics_password@postgres:5432/analytics_bot}
+      - READONLY_DB_USER=${READONLY_DB_USER:-analytics_readonly}
+      - READONLY_DB_PASSWORD=${READONLY_DB_PASSWORD:-}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
+      - N8N_API_KEY_SEED=${N8N_API_KEY_SEED:-}
+      - MEDIA_URL=${MEDIA_URL:-/media/}
+      - MEDIA_ROOT=${MEDIA_ROOT:-/app/media}
+      - CHART_MAX_WIDTH_PX=${CHART_MAX_WIDTH_PX:-1080}
+      - CHART_DEFAULT_DPI=${CHART_DEFAULT_DPI:-150}
+      - IDEMPOTENCY_CACHE_TTL_SECONDS=${IDEMPOTENCY_CACHE_TTL_SECONDS:-86400}
+      - FLEXIBLE_QUERY_LLM_PROVIDER=${FLEXIBLE_QUERY_LLM_PROVIDER:-openai}
+      - FLEXIBLE_QUERY_LLM_MODEL=${FLEXIBLE_QUERY_LLM_MODEL:-gpt-4o-mini}
+      - FLEXIBLE_QUERY_LLM_API_KEY=${FLEXIBLE_QUERY_LLM_API_KEY:-}
+      - FLEXIBLE_QUERY_MIN_CONFIDENCE=${FLEXIBLE_QUERY_MIN_CONFIDENCE:-0.6}
+      - FLEXIBLE_QUERY_TIMEOUT_SECONDS=${FLEXIBLE_QUERY_TIMEOUT_SECONDS:-8}
     depends_on:
       - postgres
       - redis

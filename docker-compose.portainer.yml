@@ -1,0 +1,61 @@
+# Portainer-compatible compose: backend only.
+# Use this when postgres and redis are already running in separate stacks.
+# All environment variables are set via Portainer UI (no .env file needed).
+#
+# Required Portainer env vars:
+#   DATABASE_URL        postgres://user:pass@host:5432/dbname
+#   N8N_API_KEY_SEED    your-secret-api-key
+#
+# Optional (have sensible defaults):
+#   DJANGO_SECRET_KEY, DJANGO_DEBUG, DJANGO_SETTINGS_MODULE,
+#   DJANGO_ALLOWED_HOSTS, READONLY_DB_USER, READONLY_DB_PASSWORD,
+#   REDIS_URL, MEDIA_URL, MEDIA_ROOT, CHART_MAX_WIDTH_PX,
+#   CHART_DEFAULT_DPI, IDEMPOTENCY_CACHE_TTL_SECONDS,
+#   FLEXIBLE_QUERY_LLM_PROVIDER, FLEXIBLE_QUERY_LLM_MODEL,
+#   FLEXIBLE_QUERY_LLM_API_KEY, FLEXIBLE_QUERY_MIN_CONFIDENCE,
+#   FLEXIBLE_QUERY_TIMEOUT_SECONDS
+
+services:
+  backend:
+    image: ghcr.io/mazzuccoda/backend_ia_chatbot:latest
+    build: ./backend
+    ports:
+      - "8010:8000"
+    environment:
+      - DJANGO_SECRET_KEY
+      - DJANGO_DEBUG
+      - DJANGO_SETTINGS_MODULE
+      - DJANGO_ALLOWED_HOSTS
+      - DATABASE_URL
+      - READONLY_DB_USER
+      - READONLY_DB_PASSWORD
+      - REDIS_URL
+      - N8N_API_KEY_SEED
+      - MEDIA_URL
+      - MEDIA_ROOT
+      - CHART_MAX_WIDTH_PX
+      - CHART_DEFAULT_DPI
+      - IDEMPOTENCY_CACHE_TTL_SECONDS
+      - FLEXIBLE_QUERY_LLM_PROVIDER
+      - FLEXIBLE_QUERY_LLM_MODEL
+      - FLEXIBLE_QUERY_LLM_API_KEY
+      - FLEXIBLE_QUERY_MIN_CONFIDENCE
+      - FLEXIBLE_QUERY_TIMEOUT_SECONDS
+    volumes:
+      - media_data:/app/media
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - default
+      - ai_memory_default
+
+volumes:
+  media_data:
+
+networks:
+  ai_memory_default:
+    external: true
