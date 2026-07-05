@@ -2,10 +2,9 @@
 
 import logging
 
-from django.db import connections
-
 from apps.audit.services import AuditTimer, create_audit_log
 
+from .read_replica import ejecutar_en_readonly
 from .text_to_sql import generar_sql
 from .validators import validar_sql
 
@@ -81,10 +80,7 @@ def ejecutar_consulta_flexible(
 
         # Step 3: Execute on readonly connection
         try:
-            with connections["readonly"].cursor() as cursor:
-                cursor.execute(sql_final)
-                columns = [col[0] for col in cursor.description]
-                rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
+            rows = ejecutar_en_readonly(sql_final)
         except Exception as exc:
             error_str = str(exc)
             is_timeout = "canceling statement due to statement timeout" in error_str.lower() or "timeout" in error_str.lower()
