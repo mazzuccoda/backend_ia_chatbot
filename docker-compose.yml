@@ -34,6 +34,9 @@ services:
       timeout: 5s
       retries: 3
     restart: unless-stopped
+    networks:
+      - default
+      - ai_memory
 
   postgres:
     image: postgres:16-alpine
@@ -52,3 +55,8 @@ services:
 volumes:
   postgres_data:
   media_data:
+
+networks:
+  ai_memory:
+    name: ai-memory_default
+    external: true

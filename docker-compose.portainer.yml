@@ -51,11 +51,12 @@ services:
     restart: unless-stopped
     networks:
       - default
-      - ai_memory_default
+      - ai_memory
 
 volumes:
   media_data:
 
 networks:
-  ai_memory_default:
+  ai_memory:
+    name: ai-memory_default
     external: true
