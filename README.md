@@ -41,10 +41,13 @@ cd backend_ia_chatbot
 cp .env.example .env
 # Editar .env — como mínimo cambiar DJANGO_SECRET_KEY y N8N_API_KEY_SEED
 
-# 3. Levantar
+# 3. Crear la red de ai-memory si no existe (en el home lab ya la crea ese stack)
+docker network create ai-memory_default 2>/dev/null || true
+
+# 4. Levantar
 docker compose up --build -d
 
-# 4. Crear superusuario para Django Admin
+# 5. Crear superusuario para Django Admin
 docker compose exec backend python manage.py createsuperuser
 ```
 
@@ -234,6 +237,8 @@ Luego configurar `READONLY_DB_USER` y `READONLY_DB_PASSWORD` en el `.env`.
 4. **Compose path**: `docker-compose.yml`
 5. En **Environment variables**, agregar todas las variables del `.env.example`
    con valores de producción.
+   El backend se conecta también a la red `ai-memory_default` (stack `ai-memory`),
+   así `DATABASE_URL` puede apuntar a `ai_postgres:5432`.
 6. Click en **Deploy the stack**.
 
 ---
